@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="Cache-Control" content="no-siteapp">
+	<title><%= projectname %></title>
+	<link rel="stylesheet" href="css/main.css" inline>
+	<% if (legacy) { %>
+	<!--[if lt IE 9]>
+		<link rel="stylesheet" href="css/legacy.css">
+	<![endif]-->
+	<% } %>
+</head>
+<body>
+	<p>欢迎使用样板页面</p>
+	<% if (legacy) { %>
+	<!--[if lte IE 9]>
+		<p>IE9及以下浏览器可见</p>
+	<![endif]-->
+	<% } %>
+
+	<% if (useRev) { %><!-- build:js js/bundle.js --><% } %>
+	<script src="js/main.js"></script>
+	<% if (useRev) { %><!-- endbuild --><% } %>
+</body>
+</html>

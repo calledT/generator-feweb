@@ -1,0 +1,4 @@
+<% if (useSass) { %>
+@import 'function/functions';
+@import 'mixin/mixins';
+<% } %>
