@@ -7,7 +7,6 @@ var mkdirp = require('mkdirp');
 
 module.exports = generators.Base.extend({
   constructor: function() {
-
     generators.Base.apply(this, arguments);
 
     this.option('skip-welcome-message', {
@@ -19,18 +18,14 @@ module.exports = generators.Base.extend({
       desc: 'Skips the message after the installation of dependencies',
       type: Boolean
     });
-
   },
   prompting: function() {
     var done = this.async();
 
     var prompts = [{
-      type: 'confirm',
       name: 'legacy',
       message: 'Support legacy ie?',
-      default: true,
-      when: function (answers) {
-      }
+      default: 'Y/n'
     }, {
       type: 'checkbox',
       name: 'tasks',
@@ -54,7 +49,7 @@ module.exports = generators.Base.extend({
       }]
     }, {
       type: 'checkbox',
-      name: features,
+      name: 'features',
       message: 'What more would you like?',
       choices: [{
         name: 'Modernizr',
@@ -82,7 +77,7 @@ module.exports = generators.Base.extend({
       this.useImagemin = has('useImagemin', tasks);
       this.includeModernizr = has('includeModernizr', features);
       this.projectname = answers.projectname;
-      this.legacy = answers.legacy;
+      this.legacy = (/y/i).test(answers.legacy);
 
       done();
     }.bind(this));
@@ -165,12 +160,12 @@ module.exports = generators.Base.extend({
     sass: function() {
       if (this.useSass) {
         this.fs.copyTpl(
-          this.templatePath('_variables.scss'),
+          this.templatePath('scss/_variables.scss'),
           this.destinationPath('src/scss/helpers/_variables.scss'),
           {legacy: this.legacy}
         );
         this.fs.copy(
-          this.templatePath('main.scss'),
+          this.templatePath('scss/main.scss'),
           this.destinationPath('src/scss/main.scss')
         );
         this.fs.copy(
@@ -178,23 +173,23 @@ module.exports = generators.Base.extend({
           this.destinationPath('src/scss/base/_normalize.scss')
         );
         this.fs.copy(
-          this.templatePath('_extra.scss'),
+          this.templatePath('scss/_extra.scss'),
           this.destinationPath('src/scss/base/_normalize-extra.scss')
         );
         this.fs.copy(
-          this.templatePath('_mixins.scss'),
+          this.templatePath('scss/_mixins.scss'),
           this.destinationPath('src/scss/helper/_mixins.scss')
         );
         this.fs.copy(
-          this.templatePath('_functions.scss'),
+          this.templatePath('scss/_functions.scss'),
           this.destinationPath('src/scss/helper/_functions.scss')
         );
         this.fs.copy(
-          this.templatePath('mixins/*.scss'),
+          this.templatePath('scss/mixins/*.scss'),
           this.destinationPath('src/scss/helper/mixins')
         );
         this.fs.copy(
-          this.templatePath('functions/*.scss'),
+          this.templatePath('scss/functions/*.scss'),
           this.destinationPath('src/scss/helper/functions')
         )
       }
@@ -211,7 +206,10 @@ module.exports = generators.Base.extend({
       }
     }
   },
-  install: function() {
-
+  install: function () {
+    this.installDependencies({
+      skipInstall: this.options['skip-install'],
+      skipMessage: this.options['skip-install-message']
+    });
   }
 });
