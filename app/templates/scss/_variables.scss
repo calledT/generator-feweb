@@ -1,0 +1,10 @@
+
+$legacy: <% if (legacy) { %>true <% } else { %>false <% } %>!default;
+
+$font-family: PingFang SC, Lantinghei SC, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans !default;
+$font-size: 12px !default;
+
+
+$background: #fff !default;
+$color: #000 !default;
+$brand: #d91a29 !default;
