@@ -1,4 +1,5 @@
 'use strict';
+
 var generators = require('yeoman-generator');
 var yosay = require('yosay');
 var chalk = require('chalk');
@@ -10,20 +11,15 @@ module.exports = generators.Base.extend({
     generators.Base.apply(this, arguments);
 
     this.option('skip-welcome-message', {
-      desc: 'Skip welcome message',
-      type: Boolean,
-      defaults: false
+      desc: 'Skips the welcome message',
+      type: Boolean
     });
 
-    this.option('skip-install', {
-      desc: 'Do not install dependencies',
-      type: Boolean,
-      defaults: false
+    this.option('skip-install-message', {
+      desc: 'Skips the message after the installation of dependencies',
+      type: Boolean
     });
 
-    this.skipWelcome = this.options['skip-welcome-message'];
-    this.skipInstall = this.options['skip-install'];
-    this.pkg = require('../package.json');
   },
   prompting: function() {
     var done = this.async();
@@ -57,6 +53,15 @@ module.exports = generators.Base.extend({
         checked: true
       }]
     }, {
+      type: 'checkbox',
+      name: features,
+      message: 'What more would you like?',
+      choices: [{
+        name: 'Modernizr',
+        value: 'includeModernizr',
+        checked: true
+      }]
+    }, {
       type: 'input',
       name: 'projectname',
       message: 'Your project name',
@@ -65,15 +70,17 @@ module.exports = generators.Base.extend({
 
     this.prompt(prompts, function (answers) {
       var tasks = answers.tasks;
+      var features = answers.features;
 
-      function hasTask(feat) {
-        return tasks && tasks.indexOf(feat) !== -1;
+      function has(feat, arr) {
+        return arr && arr.indexOf(feat) !== -1;
       }
 
-      this.useSass = hasTask('useSass');
-      this.useRev = hasTask('useRev');
-      this.useProxy = hasTask('useProxy');
-      this.useImagemin = hasTask('useImagemin');
+      this.useSass = has('useSass', tasks);
+      this.useRev = has('useRev', tasks);
+      this.useProxy = has('useProxy', tasks);
+      this.useImagemin = has('useImagemin', tasks);
+      this.includeModernizr = has('includeModernizr', features);
       this.projectname = answers.projectname;
       this.legacy = answers.legacy;
 
@@ -106,12 +113,42 @@ module.exports = generators.Base.extend({
         }
       )
     },
+    bower: function () {
+      var bowerJson = {
+        name: this.appname,
+        private: true,
+        dependencies: {}
+      };
+
+      if (this.includeModernizr) {
+        bowerJson.dependencies['modernizr'] = '~2.8.3';
+      }
+
+      this.fs.writeJSON('bower.json', bowerJson);
+      this.fs.copy(
+        this.templatePath('bowerrc'),
+        this.destinationPath('.bowerrc')
+      );
+    },
+    git: function () {
+      this.fs.copy(
+        this.templatePath('gitignore'),
+        this.destinationPath('.gitignore')
+      );
+    },
+    editorConfig: function () {
+      this.fs.copy(
+        this.templatePath('editorconfig'),
+        this.destinationPath('.editorconfig')
+      );
+    },
     html: function() {
       this.fs.copyTpl(
         this.templatePath('index.html'),
         this.destinationPath('index.html'),
         {
           useRev: this.useRev,
+          includeModernizr: this.includeModernizr,
           projectname: this.projectname,
           legacy: this.legacy
         }
@@ -141,8 +178,8 @@ module.exports = generators.Base.extend({
           this.destinationPath('src/scss/base/_normalize.scss')
         );
         this.fs.copy(
-          this.templatePath('_typo.scss'),
-          this.destinationPath('src/scss/base/_typo.scss')
+          this.templatePath('_extra.scss'),
+          this.destinationPath('src/scss/base/_normalize-extra.scss')
         );
         this.fs.copy(
           this.templatePath('_mixins.scss'),

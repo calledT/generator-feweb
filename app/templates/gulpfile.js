@@ -16,7 +16,7 @@ var reload       = browserSync.reload;
 var $ = require('gulp-load-plugins')({pattern: ['gulp-*', 'gulp.*'], replaceString: /^gulp(-|\.)/, lazy: true });
 
 var AUTOPREFIXER_BROWSERS = [
-  'ie >= 7',
+  'ie >=<% if (legacy) { %>6<% } else { %>8<% } %>',
   'ie_mob >= 10',
   'ff >= 24',
   'chrome >= 30',

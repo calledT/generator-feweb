@@ -1,26 +1,35 @@
+<% if (legacy) { %>
+<!--[if IE]><![endif]-->
 <!DOCTYPE html>
-<html>
+<!--[if lt IE 7]><html class="<% if (includeModernizr) { %>no-js <% } %>lt-ie9 lt-ie8 lt-ie7"><![endif]-->
+<!--[if IE 7]><html class="<% if (includeModernizr) { %>no-js <% } %>lt-ie9 lt-ie8"><![endif]-->
+<!--[if IE 8]><html class="<% if (includeModernizr) { %>no-js <% } %>lt-ie9"><![endif]-->
+<!--[if gt IE 8]><!--><html<% if (includeModernizr) { %> class="no-js"<% } %>><!--<![endif]-->
+<% } else { %>
+<!DOCTYPE html>
+<html<% if (includeModernizr) { %> class="no-js"<% } %>>
+<% } %>
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<meta name="renderer" content="webkit">
 	<meta http-equiv="Cache-Control" content="no-siteapp">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<meta name="renderer" content="webkit">
 	<title><%= projectname %></title>
 	<link rel="stylesheet" href="css/main.css" inline>
-	<% if (legacy) { %>
-	<!--[if lt IE 9]>
-		<link rel="stylesheet" href="css/legacy.css">
-	<![endif]-->
+	<% if (includeModernizr) { %>
+  <% if (useRev) { %><!-- build:js js/modernizr.js --><% } %>
+  <script src="/bower_components/modernizr/modernizr.js"<% if (!useRev) { %> inline<% } %>></script>
+	<% if (useRev) { %><!-- endbuild --><% } %>
 	<% } %>
 </head>
 <body>
-	<p>欢迎使用样板页面</p>
 	<% if (legacy) { %>
-	<!--[if lte IE 9]>
-		<p>IE9及以下浏览器可见</p>
+	<!--[if lt IE 8]>
+	<p class="browserupgrade">为您更好的浏览此网页，请<a href="http://browsehappy.com/" target="_blank">升级浏览器</a></p>
 	<![endif]-->
 	<% } %>
+	<p>欢迎</p>
 
 	<% if (useRev) { %><!-- build:js js/bundle.js --><% } %>
 	<script src="js/main.js"></script>
