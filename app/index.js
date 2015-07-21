@@ -112,21 +112,14 @@ module.exports = generators.Base.extend({
       )
     },
     bower: function () {
-      var bowerJson = {
-        name: this.appname,
-        private: true,
-        dependencies: {}
-      };
-
-      if (this.includeModernizr) {
-        bowerJson.dependencies['modernizr'] = '~2.8.3';
-      }
-
-      this.fs.writeJSON('bower.json', bowerJson);
-      this.fs.copy(
-        this.templatePath('bowerrc'),
-        this.destinationPath('.bowerrc')
-      );
+      this.fs.copyTpl(
+        this.templatePath('_bower.json'),
+        this.destinationPath('bower.json'),
+        {
+          projectname: this.projectname,
+          includeModernizr: this.includeModernizr
+        }
+      )
     },
     git: function () {
       this.fs.copy(

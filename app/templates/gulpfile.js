@@ -1,17 +1,14 @@
 
-var del          = require('del');
-var gulp         = require('gulp');
-var path         = require('path');
-var runSequence  = require('run-sequence');
-var browserSync  = require('browser-sync');
-var autoprefixer = require('autoprefixer-core');
-<% if (useImagemin) { %>
-var pngquant     = require('imagemin-pngquant');
-<% } %>
-<% if (useProxy) { %>
-var httpProxy    = require('http-proxy');
-<% } %>
-var reload       = browserSync.reload;
+var del            = require('del');
+var gulp           = require('gulp');
+var path           = require('path');
+var runSequence    = require('run-sequence');
+var browserSync    = require('browser-sync');
+var autoprefixer   = require('autoprefixer-core');
+var mainBowerFiles = require('main-bower-files');<% if (useImagemin) { %>
+var pngquant       = require('imagemin-pngquant');<% } %><% if (useProxy) { %>
+var httpProxy      = require('http-proxy');<% } %>
+var reload         = browserSync.reload;
 
 var $ = require('gulp-load-plugins')({pattern: ['gulp-*', 'gulp.*'], replaceString: /^gulp(-|\.)/, lazy: true });
 
@@ -76,6 +73,11 @@ gulp.task('htmlmin', function() {
   return stream;
 })
 
+gulp.task('bower', function() {
+  var stream = gulp.src(mainBowerFiles())
+    .pipe($.if('*.js', gulp.dest('src/js/lib')))
+    .pipe($.if('*.css', gulp.dest('src/css')))
+});
 
 <% if (useSass) { %>
 gulp.task('sass', function() {
@@ -89,7 +91,6 @@ gulp.task('sass', function() {
 	return stream;
 });
 <% } %>
-
 
 <% if (useRev) { %>
 gulp.task('optimize', function() {
@@ -127,20 +128,15 @@ gulp.task('imagemin', function(){
 			.pipe($.imagemin({
 				progressive: true,
 				use: [pngquant()]
-			}))
-      <% if (useRev) { %>
-      .pipe($.rev())
-      <% } %>
-			.pipe(gulp.dest('dist/img'))
-      <% if (useRev) { %>
+			}))<% if (useRev) { %>
+      .pipe($.rev())<% } %>
+			.pipe(gulp.dest('dist/img'))<% if (useRev) { %>
 			.pipe($.rev.manifest('manifest.json'))
-			.pipe(gulp.dest('dist'));
-      <% } %>
+			.pipe(gulp.dest('dist'));<% } %>
 
 	return stream;
 });
 <% } %>
-
 
 <% if (useProxy) { %>
 var proxy = httpProxy.createProxyServer({
@@ -162,7 +158,7 @@ gulp.task('clean', function(cb) {
 });
 
 
-gulp.task('serve', <% if (useSass) { %>['sass'], <% } %>function() {
+gulp.task('serve', ['bower'<% if (useSass) { %>, 'sass'<% } %>], function() {
 	browserSync.init({
 		startPath: 'index.html',
 		server: {
@@ -181,9 +177,11 @@ gulp.task('serve', <% if (useSass) { %>['sass'], <% } %>function() {
 
 gulp.task('default', ['serve']);
 
+<% if (useRev && useImagemin) { %>
 gulp.task('build', function(cb) {
 	runSequence('clean', 'sass', 'imagemin', 'optimize');
 });
+<% } %>
 
 
 
