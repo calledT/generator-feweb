@@ -35,6 +35,10 @@ module.exports = generators.Base.extend({
         name: 'Modernizr',
         value: 'includeModernizr',
         checked: true
+      }, {
+        name: 'JQuery',
+        value: 'includeJQuery',
+        checked: true
       }]
     }, {
       type: 'checkbox',
@@ -78,6 +82,7 @@ module.exports = generators.Base.extend({
       this.useProxy = has('useProxy', tasks);
       this.useImagemin = has('useImagemin', tasks);
       this.includeModernizr = has('includeModernizr', features);
+      this.includeJQuery = has('includeJQuery', features);
       this.projectname = _s.slugify(answers.projectname);
       this.legacy = (/y/i).test(answers.legacy);
 
@@ -117,7 +122,9 @@ module.exports = generators.Base.extend({
         this.destinationPath('bower.json'),
         {
           projectname: this.projectname,
-          includeModernizr: this.includeModernizr
+          legacy: this.legacy,
+          includeModernizr: this.includeModernizr,
+          includeJQuery: this.includeJQuery
         }
       )
     },

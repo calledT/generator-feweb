@@ -1,10 +1,14 @@
 {
   "name": "myweb",
   "private": true,
-  "dependencies": {<% if (includeModernizr) { -%>
-    "modernizr": "~2.8.3"<% } %>
+  "dependencies": {<% if (includeJQuery) { %>
+    "jquery": "~1.11.1",
+    "jquery-cookie": "~1.4.1",<% } else { %>
+    "cookies-js": "~1.2.1",<% } %><% if (includeModernizr) { %>
+    "modernizr": "~2.8.3"<% } else if (legacy) {%>
+    "html5shiv": "~3.7.3"<% } %>
   },
-  "overrides": {<% if (includeModernizr) { -%>
+  "overrides": {<% if (includeModernizr) { %>
     "modernizr": {
       "main": "modernizr.js"
     }<% } %>
