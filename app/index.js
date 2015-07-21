@@ -173,11 +173,6 @@ module.exports = generators.Base.extend({
     },
     sass: function() {
       if (this.useSass) {
-        this.fs.copyTpl(
-          this.templatePath('scss/_variables.scss'),
-          this.destinationPath('src/scss/helpers/_variables.scss'),
-          {legacy: this.legacy}
-        );
         this.fs.copy(
           this.templatePath('scss/main.scss'),
           this.destinationPath('src/scss/main.scss')
@@ -190,21 +185,26 @@ module.exports = generators.Base.extend({
           this.templatePath('scss/_extra.scss'),
           this.destinationPath('src/scss/base/_normalize-extra.scss')
         );
+        this.fs.copyTpl(
+          this.templatePath('scss/_variables.scss'),
+          this.destinationPath('src/scss/helpers/_variables.scss'),
+          {legacy: this.legacy}
+        );
         this.fs.copy(
           this.templatePath('scss/_mixins.scss'),
-          this.destinationPath('src/scss/helper/_mixins.scss')
+          this.destinationPath('src/scss/helpers/_mixins.scss')
         );
         this.fs.copy(
           this.templatePath('scss/_functions.scss'),
-          this.destinationPath('src/scss/helper/_functions.scss')
+          this.destinationPath('src/scss/helpers/_functions.scss')
         );
         this.fs.copy(
           this.templatePath('scss/mixins/*.scss'),
-          this.destinationPath('src/scss/helper/mixins')
+          this.destinationPath('src/scss/helpers/mixins')
         );
         this.fs.copy(
           this.templatePath('scss/functions/*.scss'),
-          this.destinationPath('src/scss/helper/functions')
+          this.destinationPath('src/scss/helpers/functions')
         )
       }
     },

@@ -121,7 +121,7 @@ textarea {
   font-family: Palatino, Optima, Georgia, serif;
 }
 
-@if !$legacy {
+@if not $legacy {
   .browserupgrade {
     margin: 0.2em 0;
     background: #ccc;
