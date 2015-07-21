@@ -1,5 +1,7 @@
-// Hide only visually, but have it available for screenreaders:
-// http://snook.ca/archives/html_and_css/hiding-content-for-accessibility
+/*
+ * Hide only visually, but have it available for screen readers:
+ * http://snook.ca/archives/html_and_css/hiding-content-for-accessibility
+ */
 @mixin visuallyhidden() {
 	border: 0;
 	clip: rect(0 0 0 0);
@@ -10,8 +12,11 @@
 	position: absolute;
 	width: 1px;
 
-	// Extends the .visuallyhidden class to allow the element to be focusable
-  // when navigated to via the keyboard: https://www.drupal.org/node/897638
+	/*
+	 * Extends the .visuallyhidden class to allow the element
+	 * to be focusable when navigated to via the keyboard:
+	 * https://www.drupal.org/node/897638
+	 */
 	&.focusable:active,
 	&.focusable:focus {
 		clip: auto;

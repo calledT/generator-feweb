@@ -4,6 +4,7 @@ var generators = require('yeoman-generator');
 var yosay = require('yosay');
 var chalk = require('chalk');
 var mkdirp = require('mkdirp');
+var _s = require('underscore.string');
 
 module.exports = generators.Base.extend({
   constructor: function() {
@@ -28,6 +29,15 @@ module.exports = generators.Base.extend({
       default: 'Y/n'
     }, {
       type: 'checkbox',
+      name: 'features',
+      message: 'What more would you like?',
+      choices: [{
+        name: 'Modernizr',
+        value: 'includeModernizr',
+        checked: true
+      }]
+    }, {
+      type: 'checkbox',
       name: 'tasks',
       message: 'What more gulp tasks would you like?',
       choices: [{
@@ -36,6 +46,7 @@ module.exports = generators.Base.extend({
         checked: true
       }, {
         name: 'Reversioning',
+
         value: 'useRev',
         checked: true
       }, {
@@ -45,15 +56,6 @@ module.exports = generators.Base.extend({
       }, {
         name: 'Imagemin',
         value: 'useImagemin',
-        checked: true
-      }]
-    }, {
-      type: 'checkbox',
-      name: 'features',
-      message: 'What more would you like?',
-      choices: [{
-        name: 'Modernizr',
-        value: 'includeModernizr',
         checked: true
       }]
     }, {
@@ -76,7 +78,7 @@ module.exports = generators.Base.extend({
       this.useProxy = has('useProxy', tasks);
       this.useImagemin = has('useImagemin', tasks);
       this.includeModernizr = has('includeModernizr', features);
-      this.projectname = answers.projectname;
+      this.projectname = _s.slugify(answers.projectname);
       this.legacy = (/y/i).test(answers.legacy);
 
       done();
@@ -101,6 +103,7 @@ module.exports = generators.Base.extend({
         this.templatePath('_package.json'),
         this.destinationPath('package.json'),
         {
+          projectname: this.projectname,
           useSass: this.useSass,
           useProxy: this.useProxy,
           useRev: this.useRev,
@@ -140,8 +143,9 @@ module.exports = generators.Base.extend({
     html: function() {
       this.fs.copyTpl(
         this.templatePath('index.html'),
-        this.destinationPath('index.html'),
+        this.destinationPath('src/index.html'),
         {
+          useSass: this.useSass,
           useRev: this.useRev,
           includeModernizr: this.includeModernizr,
           projectname: this.projectname,
@@ -152,10 +156,20 @@ module.exports = generators.Base.extend({
     css: function() {
       if (!this.useSass) {
         this.fs.copy(
-          this.templatePath('normalize.css'),
+          this.templatePath('main.css'),
           this.destinationPath('src/css/main.css')
         );
+        this.fs.copy(
+          this.templatePath('normalize.css'),
+          this.destinationPath('src/css/normalize.css')
+        );
       }
+    },
+    js: function() {
+      this.fs.copy(
+        this.templatePath('main.js'),
+        this.destinationPath('src/js/main.js')
+      );
     },
     sass: function() {
       if (this.useSass) {
