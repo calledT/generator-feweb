@@ -4,20 +4,21 @@
 
 ## Features
 
-* Gulp for tasks runner
-* Preview server with Browsersync
-* Normalize.css
+* Gulp for tasks runner.
+* Preview server with Browsersync.
+* Normalize.css.
 * Automagically wire up your Bower components with [main-bower-files](#third-party-dependencies).
-* Base structure of Scss and automagically compile Scss(Optional)
-* Http-proxy to avoid CORS when develop(Optional)
-* Awesome Image Optimization (via OptiPNG, pngquant, jpegtran and gifsicle)(Optional)
-* Legacy IE support(Optional)
+* Base structure of Scss and automagically compile Scss(Optional).
+* Http-proxy to avoid CORS when develop(Optional).
+* Awesome Image Optimization (via OptiPNG, pngquant, jpegtran and gifsicle)(Optional).
+* Legacy IE support(Optional).
+* Reversioning static files use hash(Optional).
 
 ## Getting Started
 
-- Install: `npm i -g yo generator-feweb`
+- Install: `npm i -g yo bower generator-feweb`
 - Run: `yo feweb`
-- Run `gulp serve` for browser your page
+- Run `gulp serve` for browse your page. `gulp build` for optimize your files to dist folder, choose `useRev` & `useImagemin` when `yo feweb`. 
 
 ## Options
 
