@@ -188,7 +188,7 @@ gulp.task('default', ['serve']);
 
 <% if (useRev && useImagemin) { %>
 gulp.task('build', function(cb) {
-	runSequence('clean', 'sass', 'imagemin', 'optimize');
+	runSequence('clean',<% if (useSass) { %> 'sass',<% } %> 'imagemin', 'optimize');
 });
 <% } %>
 
