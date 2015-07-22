@@ -13,15 +13,19 @@ var reload         = browserSync.reload;
 var $ = require('gulp-load-plugins')({pattern: ['gulp-*', 'gulp.*'], replaceString: /^gulp(-|\.)/, lazy: true });
 
 var AUTOPREFIXER_BROWSERS = [
-  'ie >=<% if (legacy) { %>6<% } else { %>8<% } %>',
-  'ie_mob >= 10',
-  'ff >= 24',
-  'chrome >= 30',
-  'safari >= 6',
-  'opera >= 23',
-  'ios >= 6',
-  'android >= 4.0',
-  'bb >= 10'
+  "Explorer >= 9", /** Internet Explorer **/
+  "Firefox >= 24", /**  Mozilla Firefox **/
+  "Chrome >= 31", /** Google Chrome **/
+  "Safari >= 6", /** desktop Safari **/
+  "Opera >= 23", /** Opera **/
+  "iOS >= 6", /** iOS Safari **/
+  "Android >= 4.0", /** Android WebView **/
+  "and_uc >= 9", /** UC for Android **/
+  "and_ff >= 30", /** Firefox for Android **/
+  "and_chr >= 31", /** Chrome for Android **/
+  "ie_mob >= 10", /** Internet Explorer Mobile **/
+  "bb >= 10", /** Blackberry browser **/
+  "op_mob >= 10" /** Opera Mobile **/
 ];
 
 var processors = [autoprefixer({browsers: AUTOPREFIXER_BROWSERS})];
