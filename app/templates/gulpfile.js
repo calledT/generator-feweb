@@ -79,8 +79,13 @@ gulp.task('htmlmin', function() {
 
 gulp.task('bower', function() {
   var stream = gulp.src(mainBowerFiles())
-    .pipe($.if('*.js', gulp.dest('src/js/lib')))
-    .pipe($.if('*.css', gulp.dest('src/css')))
+    .pipe($.if('*.js', gulp.dest('src/js/lib')))<% if (useSass) { %>
+    .pipe($.if('*.{css,scss}', $.rename({prefix: '_', extname: '.scss'})))
+    .pipe($.if('**/_normalize.scss', gulp.dest('src/scss/base')))
+    .pipe($.if(['**/*.scss', '!**/_normalize.scss'], gulp.dest('src/scss/vendors')))<% } else {%>
+    .pipe($.if('*.css', gulp.dest('src/css')))<% } %>
+
+  return stream;
 });
 
 <% if (useSass) { %>

@@ -1,10 +1,17 @@
 'use strict';
 
-var generators = require('yeoman-generator');
-var yosay = require('yosay');
-var chalk = require('chalk');
-var mkdirp = require('mkdirp');
-var _s = require('underscore.string');
+var generators     = require('yeoman-generator');
+var yosay          = require('yosay');
+var chalk          = require('chalk');
+var mkdirp         = require('mkdirp');
+var path           = require('path');
+var fs             = require('vinyl-fs');
+var through        = require('through2');
+var gulprename     = require('gulp-rename');
+var gulpif         = require('gulp-if');
+var _s             = require('underscore.string');
+var mainBowerFiles = require('main-bower-files');
+
 
 module.exports = generators.Base.extend({
   constructor: function() {
@@ -18,6 +25,11 @@ module.exports = generators.Base.extend({
     this.option('skip-install-message', {
       desc: 'Skips the message after the installation of dependencies',
       type: Boolean
+    });
+
+    this.option('skip-install', {
+      type: Boolean,
+      default: false
     });
   },
   prompting: function() {
@@ -159,10 +171,6 @@ module.exports = generators.Base.extend({
           this.templatePath('main.css'),
           this.destinationPath('src/css/main.css')
         );
-        this.fs.copy(
-          this.templatePath('normalize.css'),
-          this.destinationPath('src/css/normalize.css')
-        );
       }
     },
     js: function() {
@@ -176,10 +184,6 @@ module.exports = generators.Base.extend({
         this.fs.copy(
           this.templatePath('scss/main.scss'),
           this.destinationPath('src/scss/main.scss')
-        );
-        this.fs.copy(
-          this.templatePath('normalize.css'),
-          this.destinationPath('src/scss/base/_normalize.scss')
         );
         this.fs.copy(
           this.templatePath('scss/_extra.scss'),
@@ -225,5 +229,33 @@ module.exports = generators.Base.extend({
       skipInstall: this.options['skip-install'],
       skipMessage: this.options['skip-install-message']
     });
+  },
+  end: function () {
+    var howToInstall =
+      '\nAfter running ' +
+      chalk.yellow.bold('npm install & bower install') +
+      ', inject your' +
+      '\nfront end dependencies by running ' +
+      chalk.yellow.bold('gulp bower') +
+      '.';
+
+    if (this.options['skip-install']) {
+      this.log(howToInstall);
+      return;
+    }
+
+    var jsFiles = mainBowerFiles({filter: '**/*.js'});
+    fs.src(jsFiles).pipe(fs.dest('src/js/lib'));
+
+    if (this.useSass) {
+      var styleFiles = mainBowerFiles({filter: '**/*.{css,scss}'});
+      fs.src(styleFiles)
+      .pipe(gulprename({prefix: '_', extname: '.scss'}))
+      .pipe(gulpif('**/_normalize.scss', fs.dest('src/scss/base')))
+      .pipe(gulpif(['**/*.scss', '!**/_normalize.scss'], fs.dest('src/scss/vendors')));
+    } else {
+      var cssFiles = mainBowerFiles({filter: '**/*.css'});
+      fs.src(cssFiles).pipe(fs.dest('src/css'));
+    }
   }
 });
