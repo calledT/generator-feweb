@@ -12,13 +12,14 @@
 * Http-proxy to avoid CORS when develop(Optional).
 * Awesome Image Optimization (via OptiPNG, pngquant, jpegtran and gifsicle)(Optional).
 * Legacy IE support(Optional).
-* Reversioning static files use hash(Optional).
+* Reversioning static files for cache busting(Optional).
+* Automagically generate sprite image(Optional).
 
 ## Getting Started
 
 - Install: `npm i -g yo bower generator-feweb`
 - Run: `yo feweb`
-- Run `gulp serve` for browse your page. `gulp build` for optimize your files to dist folder, choose `useRev` & `useImagemin` when `yo feweb`. 
+- Run `gulp serve` for browse your page. `gulp build` for optimize your files to dist folder. 
 
 ## Options
 
