@@ -1,16 +1,12 @@
 'use strict';
 
-var generators     = require('yeoman-generator');
-var yosay          = require('yosay');
-var chalk          = require('chalk');
-var mkdirp         = require('mkdirp');
-var path           = require('path');
-var fs             = require('vinyl-fs');
-var through        = require('through2');
-var gulprename     = require('gulp-rename');
-var gulpif         = require('gulp-if');
-var _s             = require('underscore.string');
-var mainBowerFiles = require('main-bower-files');
+var generators = require('yeoman-generator');
+var yosay      = require('yosay');
+var chalk      = require('chalk');
+var mkdirp     = require('mkdirp');
+var path       = require('path');
+var _s         = require('underscore.string');
+var exec       = require('child_process').exec;
 
 
 module.exports = generators.Base.extend({
@@ -34,6 +30,10 @@ module.exports = generators.Base.extend({
   },
   prompting: function() {
     var done = this.async();
+
+    if (!this.options['skip-welcome-message']) {
+      this.log(yosay('\'Allo \'allo! Out of the box I include HTML5 Boilerplate, and a gulpfile to build your webpage.'));
+    }
 
     var prompts = [{
       name: 'legacy',
@@ -73,6 +73,10 @@ module.exports = generators.Base.extend({
         name: 'Imagemin',
         value: 'useImagemin',
         checked: true
+      }, {
+        name: 'Spritesmith',
+        value: 'useSpritesmith',
+        checked: true
       }]
     }, {
       type: 'input',
@@ -93,6 +97,7 @@ module.exports = generators.Base.extend({
       this.useRev = has('useRev', tasks);
       this.useProxy = has('useProxy', tasks);
       this.useImagemin = has('useImagemin', tasks);
+      this.useSpritesmith = has('useSpritesmith', tasks);
       this.includeModernizr = has('includeModernizr', features);
       this.includeJQuery = has('includeJQuery', features);
       this.projectname = _s.slugify(answers.projectname);
@@ -111,6 +116,7 @@ module.exports = generators.Base.extend({
           useProxy: this.useProxy,
           useRev: this.useRev,
           useImagemin: this.useImagemin,
+          useSpritesmith: this.useSpritesmith,
           legacy: this.legacy
         }
       );
@@ -124,6 +130,7 @@ module.exports = generators.Base.extend({
           useSass: this.useSass,
           useProxy: this.useProxy,
           useRev: this.useRev,
+          useSpritesmith: this.useSpritesmith,
           useImagemin: this.useImagemin
         }
       )
@@ -168,8 +175,8 @@ module.exports = generators.Base.extend({
     css: function() {
       if (!this.useSass) {
         this.fs.copy(
-          this.templatePath('main.css'),
-          this.destinationPath('src/css/main.css')
+          this.templatePath('normalize-extra.css'),
+          this.destinationPath('src/css/normalize-extra.css')
         );
       }
     },
@@ -181,9 +188,10 @@ module.exports = generators.Base.extend({
     },
     sass: function() {
       if (this.useSass) {
-        this.fs.copy(
+        this.fs.copyTpl(
           this.templatePath('scss/main.scss'),
-          this.destinationPath('src/scss/main.scss')
+          this.destinationPath('src/scss/main.scss'),
+          {useSpritesmith: this.useSpritesmith}
         );
         this.fs.copy(
           this.templatePath('scss/_extra.scss'),
@@ -210,18 +218,25 @@ module.exports = generators.Base.extend({
           this.templatePath('scss/functions/*.scss'),
           this.destinationPath('src/scss/helpers/functions')
         )
+        mkdirp('src/scss/components');
+        mkdirp('src/scss/layouts');
+        mkdirp('src/scss/views');
+        mkdirp('src/scss/vendors');
+      }
+    },
+    img: function() {
+      this.fs.copy(
+        this.templatePath('gulp-white-text.png'),
+        this.destinationPath('src/img/gulp.png')
+      );
+      if (this.useSpritesmith) {
+        this.fs.copy(
+          this.templatePath('sprites/*.png'),
+          this.destinationPath('src/img/sprites')
+        );
       }
     },
     misc: function () {
-      mkdirp('src/img');
-      mkdirp('src/js');
-      mkdirp('src/css');
-      if (this.useSass) {
-        mkdirp('src/scss/components');
-        mkdirp('src/scss/layouts');
-        mkdirp('src/scss/pages');
-        mkdirp('src/scss/vendors');
-      }
     }
   },
   install: function () {
@@ -231,6 +246,7 @@ module.exports = generators.Base.extend({
     });
   },
   end: function () {
+    var self = this;
     var howToInstall =
       '\nAfter running ' +
       chalk.yellow.bold('npm install & bower install') +
@@ -244,18 +260,10 @@ module.exports = generators.Base.extend({
       return;
     }
 
-    var jsFiles = mainBowerFiles({filter: '**/*.js'});
-    fs.src(jsFiles).pipe(fs.dest('src/js/lib'));
-
-    if (this.useSass) {
-      var styleFiles = mainBowerFiles({filter: '**/*.{css,scss}'});
-      fs.src(styleFiles)
-      .pipe(gulprename({prefix: '_', extname: '.scss'}))
-      .pipe(gulpif('**/_normalize.scss', fs.dest('src/scss/base')))
-      .pipe(gulpif(['**/*.scss', '!**/_normalize.scss'], fs.dest('src/scss/vendors')));
-    } else {
-      var cssFiles = mainBowerFiles({filter: '**/*.css'});
-      fs.src(cssFiles).pipe(fs.dest('src/css'));
-    }
+    exec('gulp bower', function(err, stdout, stderr){
+      if (err) {
+        self.log('you should run ' + chalk.yellow.bold('gulp bower') + ' command manually');
+      }
+    });
   }
 });

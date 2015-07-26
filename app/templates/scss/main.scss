@@ -1,7 +1,8 @@
 
 @import 'helpers/functions';
 @import 'helpers/variables';
-@import 'helpers/mixins';
+@import 'helpers/mixins';<% if (useSpritesmith) { %>
+@import 'helpers/sprite';<% } %>
 
 @import 'base/normalize';
 @import 'base/normalize-extra';

@@ -12,21 +12,19 @@
 	<meta http-equiv="Cache-Control" content="no-siteapp">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 	<meta name="renderer" content="webkit">
-	<title><%= projectname %></title><% if (useSass) { %>
-	<link rel="stylesheet" href="css/main.css" inline><% } else { %>
-	<link rel="stylesheet" href="css/normalize.css" inline>
-	<link rel="stylesheet" href="css/main.css" inline><% } %>
-	<% if (includeModernizr) { %><% if (useRev) { %><!-- build:js js/modernizr.js --><% } %>
-	<script src="js/lib/modernizr.js"<% if (!useRev) { %> inline<% } %>></script>
-	<% if (useRev) { %><!-- endbuild --><% } %><% } %>
+	<title><%= projectname %></title>
+	<link rel="stylesheet" href="css/main.css" inline><% if (includeModernizr) { %>
+	<!-- build:js js/modernizr.js -->
+	<script src="js/lib/modernizr.js"></script>
+	<!-- endbuild --><% } %>
 </head>
-<body>
-	<% if (!legacy) { %><!--[if lt IE 8]>
+<body><% if (!legacy) { %>
+	<!--[if lt IE 8]>
 	<p class="browserupgrade">为您更好的浏览此网页，请<a href="http://browsehappy.com/" target="_blank">升级浏览器</a></p>
 	<![endif]--><% } %>
-	<p>欢迎</p>
-	<% if (useRev) { %><!-- build:js js/bundle.js --><% } %>
+	<p>hello world</p>
+	<!-- build:js js/bundle.js -->
 	<script src="js/main.js"></script>
-	<% if (useRev) { %><!-- endbuild --><% } %>
+	<!-- endbuild -->
 </body>
 </html>
