@@ -8,8 +8,9 @@ var browserSync    = require('browser-sync');
 var autoprefixer   = require('autoprefixer-core');
 var mainBowerFiles = require('main-bower-files');<% if (useProxy) { %>
 var httpProxy      = require('http-proxy');<% } %>
+var cssgrace       = require('cssgrace');
 var pkg            = require('./package.json');
-var processors     = [autoprefixer({browsers: pkg.autoprefixer_browsers})];
+var processors     = [autoprefixer({browsers: pkg.autoprefixer_browsers}), cssgrace];
 
 var $ = require('gulp-load-plugins')({pattern: ['gulp-*', 'gulp.*'], replaceString: /^gulp(-|\.)/, lazy: true });
 
