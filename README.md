@@ -5,10 +5,11 @@
 ## Features
 
 * Gulp for tasks runner.
-* Preview server with Browsersync.
-* Normalize.css.
-* Automagically wire up your Bower components with [main-bower-files](#third-party-dependencies).
+* Preview by [Browsersync](http://www.browsersync.io/).
+* [Normalize.css](https://github.com/necolas/normalize.css).
+* Automagically wire up your Bower components with [main-bower-files](https://github.com/ck86/main-bower-files).
 * Base structure of Scss and automagically compile Scss(Optional).
+* Postcss with processer [[autoprefixer](https://github.com/postcss/autoprefixer),[cssgrace](https://github.com/cssdream/cssgrace)].
 * Http-proxy to avoid CORS when develop(Optional).
 * Awesome Image Optimization (via OptiPNG, pngquant, jpegtran and gifsicle)(Optional).
 * Legacy IE support(Optional).
@@ -25,6 +26,10 @@
 
 * --skip-install
   Skips the automatic execution of `bower` and `npm` after scaffolding has finished.
+
+## Update
+
+To keep with lastest version, run `npm i -g generator-feweb`.
 
 ## License
 
