@@ -1,4 +1,4 @@
-# Front-end web project generator
+# Front-end web project generator[![Build Status](https://travis-ci.org/calledT/generator-feweb.svg?branch=master)](https://travis-ci.org/calledT/generator-feweb)
 
 [Yeoman](http://yeoman.io) generator that scaffolds out a front-end web project.
 
