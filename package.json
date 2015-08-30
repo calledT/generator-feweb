@@ -1,25 +1,28 @@
 {
   "name": "generator-feweb",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "yeoman generator for front-end web developer",
-  "main": "generators/app/index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/calledT/generator-feweb.git"
-  },
   "keywords": [
-    "yeoman",
+    "yeoman-generator",
     "generator",
     "gulp",
-    "front-end",
+    "boilerplate",
     "scaffold",
     "web"
   ],
-  "author": "calledt",
-  "license": "BSD-2-Clause",
-  "bugs": {
-    "url": "https://github.com/calledT/generator-feweb/issues"
+  "author": {
+    "name": "calledT",
+    "email": "huanggengtao@gmail.com",
+    "url": "www.calledt.com"
   },
+  "repository": "calledT/generator-feweb",
+  "main": "app/index.js",
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "files": [
+    "app"
+  ],
   "dependencies": {
     "chalk": "^0.5.0",
     "mkdirp": "^0.5.1",
@@ -27,5 +30,9 @@
     "yeoman-generator": "^0.20.1",
     "yosay": "^0.3.0"
   },
-  "homepage": "https://github.com/calledT/generator-feweb#readme"
+  "devDependencies": {
+    "mocha": "*",
+    "yeoman-assert": "^2.0.0"
+  },
+  "license": "MIT"
 }
