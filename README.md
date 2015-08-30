@@ -33,5 +33,7 @@ To keep with lastest version, run `npm i -g generator-feweb`.
 
 ## License
 
-[BSD license](http://opensource.org/licenses/bsd-license.php)
+(MIT License)
+
+Copyright (c) 2015 [calledT](//calledt.com)
 
