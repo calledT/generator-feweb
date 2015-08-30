@@ -69,10 +69,6 @@ module.exports = generators.Base.extend({
         value: 'useProxy',
         checked: true
       }, {
-        name: 'Imagemin',
-        value: 'useImagemin',
-        checked: true
-      }, {
         name: 'Spritesmith',
         value: 'useSpritesmith',
         checked: true
@@ -95,7 +91,6 @@ module.exports = generators.Base.extend({
       this.useSass = has('useSass', tasks);
       this.useRev = has('useRev', tasks);
       this.useProxy = has('useProxy', tasks);
-      this.useImagemin = has('useImagemin', tasks);
       this.useSpritesmith = has('useSpritesmith', tasks);
       this.includeModernizr = has('includeModernizr', features);
       this.includeJQuery = has('includeJQuery', features);
@@ -114,7 +109,6 @@ module.exports = generators.Base.extend({
           useSass: this.useSass,
           useProxy: this.useProxy,
           useRev: this.useRev,
-          useImagemin: this.useImagemin,
           useSpritesmith: this.useSpritesmith,
           legacy: this.legacy
         }
@@ -129,8 +123,7 @@ module.exports = generators.Base.extend({
           useSass: this.useSass,
           useProxy: this.useProxy,
           useRev: this.useRev,
-          useSpritesmith: this.useSpritesmith,
-          useImagemin: this.useImagemin
+          useSpritesmith: this.useSpritesmith
         }
       )
     },
@@ -170,6 +163,7 @@ module.exports = generators.Base.extend({
           useSass: this.useSass,
           useRev: this.useRev,
           includeModernizr: this.includeModernizr,
+          includeJQuery: this.includeJQuery,
           projectname: this.projectname,
           legacy: this.legacy
         }

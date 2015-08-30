@@ -6,17 +6,22 @@
 <!--[if gt IE 8]><!--><html<% if (includeModernizr) { %> class="no-js"<% } %>><!--<![endif]--><% } else { %>
 <!DOCTYPE html>
 <html<% if (includeModernizr) { %> class="no-js"<% } %>><% } %>
-<head>
+<head lang="zh-cmn">
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta http-equiv="Cache-Control" content="no-siteapp">
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
 	<meta name="renderer" content="webkit">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
 	<title><%= projectname %></title>
 	<link rel="stylesheet" href="css/<% if (useSass) { %>main<% } else { %>concat<% } %>.css" inline><% if (includeModernizr) { %>
 	<!-- build:js js/modernizr.js -->
 	<script src="js/lib/modernizr.js"></script>
-	<!-- endbuild --><% } %>
+	<!-- endbuild --><% } else if (legacy) { %>
+  <!-- build:js js/html5shiv.js -->
+  <script src="js/lib/html5shiv.js"></script>
+  <!-- build:js js/modernizr.js --><% } %>
 </head>
 <body><% if (!legacy) { %>
 	<!--[if lt IE 8]>
@@ -24,6 +29,7 @@
 	<![endif]--><% } %>
 	<p>hello world</p>
 	<!-- build:js js/bundle.js -->
+  <% if (includeJQuery) { %><script src="js/lib/jquery.js"></script><% } %>
 	<script src="js/main.js"></script>
 	<!-- endbuild -->
 </body>

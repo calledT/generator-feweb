@@ -6,6 +6,7 @@ var _              = require('lodash');
 var del            = require('del');
 var gulp           = require('gulp');
 var path           = require('path');
+var merge          = require('merge-stream');
 var runSequence    = require('run-sequence');
 var browserSync    = require('browser-sync');
 var autoprefixer   = require('autoprefixer-core');
@@ -27,10 +28,10 @@ var MANIFEST         = 'manifest.json';
 
 gulp.task('bower', function() {
   var stream = gulp.src(mainBowerFiles())
-    .pipe($.if('**/*.js', gulp.dest(path.join(SRC.js.dir, 'lib')))<% if (useSass) { %>
+    .pipe($.if('**/*.js', gulp.dest(path.join(SRC.js.dir, 'lib'))))<% if (useSass) { %>
     .pipe($.if('**/*.{css,scss}', $.rename({prefix: '_', extname: SRC.scss.ext})))
     .pipe($.if('**/_normalize.scss', gulp.dest(path.join(SRC.scss.dir, 'base'))))
-    .pipe($.if(['**/*.scss', '!**/_normalize.scss'], gulp.dest(path.join(SRC.scss.dir, 'vendors')));<% } else {%>
+    .pipe($.if(['**/*.scss', '!**/_normalize.scss'], gulp.dest(path.join(SRC.scss.dir, 'vendors'))));<% } else {%>
     .pipe($.if('**/*.css', gulp.dest(SRC.css.dir)));<% } %>
 
   return stream;
@@ -93,7 +94,6 @@ gulp.task('optimize', function() {
 	return stream;
 });
 
-<% if (useImagemin) { %>
 gulp.task('imagemin', function(){
 	var stream = gulp.src(SRC.img.globpath, {base: SOURCE_PATH})
 			.pipe($.imagemin({progressive: true}))<% if (useRev) { %>
@@ -103,20 +103,26 @@ gulp.task('imagemin', function(){
 			.pipe(gulp.dest(DEST_PATH));<% } %>
 
 	return stream;
-});<% } %>
+});
 
 <% if (useSpritesmith) { %>
 gulp.task('sprite', function () {
-  var spriteData = gulp.src(path.json(SRC.img.dir, 'sprites/*.png')).pipe($.spritesmith({
+  var spriteData = gulp.src(path.join(SRC.img.dir, 'sprites/*.png')).pipe($.spritesmith({
     padding: 1,
     imgName: 'sprite.png',
     imgPath: '../sprite.png',
     cssName: '<% if (useSass) { %>_sprite.scss<% } else { %>sprite.css<% } %>'
   }));
 
-  return spriteData
-    .pipe($.if('*.png', gulp.dest(SRC.img.dir)))
-    <% if (useSass) { %>.pipe($.if(SRC.scss.ext, gulp.dest(path.join(SRC.scss.dir, 'helpers'))))<% } else { %>.pipe($.if(SRC.css.ext, gulp.dest(SRC.css.dir)))<% } %>;
+  var imgStream = spriteData.img
+      .pipe($.imagemin())
+      .pipe(gulp.dest(SRC.img.dir));
+
+  var cssStream = spriteData.css<% if (useSass) { %>
+      .pipe(gulp.dest(path.join(SRC.scss.dir, 'helpers')));<% } else { %>
+      .pipe(gulp.dest(SRC.css.dir));<% } %>
+
+  return merge(imgStream, cssStream);
 });<% } %>
 
 <% if (useProxy) { %>
@@ -155,7 +161,7 @@ gulp.task('serve', function(cb) {
 gulp.task('default', ['serve']);
 
 gulp.task('build', function(cb) {
-	runSequence('clean',<% if (useSpritesmith) { %> 'sprite',<% } %><% if (useSass) { %> 'sass',<% } else { %> 'concatCss',<% } %><% if (useImagemin) { %> 'imagemin',<% } %> 'optimize', cb);
+	runSequence('clean',<% if (useSpritesmith) { %> 'sprite',<% } %><% if (useSass) { %> 'sass',<% } else { %> 'concatCss',<% } %>'imagemin','optimize', cb);
 });
 
 gulp.task('clean', function(cb) {
