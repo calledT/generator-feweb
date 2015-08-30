@@ -62,7 +62,6 @@ module.exports = generators.Base.extend({
         checked: true
       }, {
         name: 'Reversioning',
-
         value: 'useRev',
         checked: true
       }, {
@@ -145,7 +144,11 @@ module.exports = generators.Base.extend({
           includeModernizr: this.includeModernizr,
           includeJQuery: this.includeJQuery
         }
-      )
+      );
+      this.fs.copy(
+        this.templatePath('bowerrc'),
+        this.destinationPath('.bowerrc')
+      );
     },
     git: function () {
       this.fs.copy(
@@ -172,30 +175,23 @@ module.exports = generators.Base.extend({
         }
       )
     },
-    css: function() {
-      if (!this.useSass) {
-        this.fs.copy(
-          this.templatePath('normalize-extra.css'),
-          this.destinationPath('src/css/normalize-extra.css')
-        );
-      }
-    },
-    js: function() {
+    javascript: function() {
       this.fs.copy(
         this.templatePath('main.js'),
         this.destinationPath('src/js/main.js')
       );
     },
-    sass: function() {
+    stylesheet: function() {
+      this.fs.copyTpl(
+        this.templatePath('normalize-extra.css'),
+        this.destinationPath(this.useSass ? 'src/scss/base/_normalize-extra.scss' : 'src/css/normalize-extra.css'),
+        {useSass: this.useSass, legacy: this.legacy}
+      )
       if (this.useSass) {
         this.fs.copyTpl(
           this.templatePath('scss/main.scss'),
           this.destinationPath('src/scss/main.scss'),
           {useSpritesmith: this.useSpritesmith}
-        );
-        this.fs.copy(
-          this.templatePath('scss/_extra.scss'),
-          this.destinationPath('src/scss/base/_normalize-extra.scss')
         );
         this.fs.copyTpl(
           this.templatePath('scss/_variables.scss'),
@@ -218,17 +214,9 @@ module.exports = generators.Base.extend({
           this.templatePath('scss/functions/*.scss'),
           this.destinationPath('src/scss/helpers/functions')
         )
-        mkdirp('src/scss/components');
-        mkdirp('src/scss/layouts');
-        mkdirp('src/scss/views');
-        mkdirp('src/scss/vendors');
       }
     },
-    img: function() {
-      this.fs.copy(
-        this.templatePath('gulp-white-text.png'),
-        this.destinationPath('src/img/gulp.png')
-      );
+    image: function() {
       if (this.useSpritesmith) {
         this.fs.copy(
           this.templatePath('sprites/*.png'),

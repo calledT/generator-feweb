@@ -1,5 +1,8 @@
 'use strict'
 
+var $ = require('gulp-load-plugins')({pattern: ['gulp-*', 'gulp.*'], replaceString: /^gulp(-|\.)/, lazy: true });
+
+var _              = require('lodash');
 var del            = require('del');
 var gulp           = require('gulp');
 var path           = require('path');
@@ -10,31 +13,38 @@ var mainBowerFiles = require('main-bower-files');<% if (useProxy) { %>
 var httpProxy      = require('http-proxy');<% } %>
 var cssgrace       = require('cssgrace');
 var pkg            = require('./package.json');
-var processors     = [autoprefixer({browsers: pkg.autoprefixer_browsers}), cssgrace];
+var processors     = [autoprefixer({browsers: pkg.browsers}), cssgrace];
 
-var $ = require('gulp-load-plugins')({pattern: ['gulp-*', 'gulp.*'], replaceString: /^gulp(-|\.)/, lazy: true });
+var SRC = _.mapKeys(pkg.src, function(value, key) {
+  value.globpath = path.join(value.dir, '**', '*' + value.ext);
+  return key;
+});
 
+// CONST
+var SOURCE_PATH      = 'src';
+var DEST_PATH        = 'dist';
+var MANIFEST         = 'manifest.json';
 
 gulp.task('bower', function() {
   var stream = gulp.src(mainBowerFiles())
-    .pipe($.if('**/*.js', gulp.dest('src/js/lib')))<% if (useSass) { %>
-    .pipe($.if('**/*.{css,scss}', $.rename({prefix: '_', extname: '.scss'})))
-    .pipe($.if('**/_normalize.scss', gulp.dest('src/scss/base')))
-    .pipe($.if(['**/*.scss', '!**/_normalize.scss'], gulp.dest('src/scss/vendors')));<% } else {%>
-    .pipe($.if('**/*.css', gulp.dest('src/css')));<% } %>
+    .pipe($.if('**/*.js', gulp.dest(path.join(SRC.js.dir, 'lib')))<% if (useSass) { %>
+    .pipe($.if('**/*.{css,scss}', $.rename({prefix: '_', extname: SRC.scss.ext})))
+    .pipe($.if('**/_normalize.scss', gulp.dest(path.join(SRC.scss.dir, 'base'))))
+    .pipe($.if(['**/*.scss', '!**/_normalize.scss'], gulp.dest(path.join(SRC.scss.dir, 'vendors')));<% } else {%>
+    .pipe($.if('**/*.css', gulp.dest(SRC.css.dir)));<% } %>
 
   return stream;
 });
 
 <% if (useSass) { %>
 gulp.task('sass', function() {
-	var stream = gulp.src('src/scss/**/*.scss')
+	var stream = gulp.src(SRC.scss.globpath)
     .pipe($.sourcemaps.init())
 		.pipe($.sass({precision: 8}).on('error', $.sass.logError))
 		.pipe($.postcss(processors))
     .pipe($.sourcemaps.write('./maps'))
-		.pipe(gulp.dest('src/css'))
-    .pipe(browserSync.stream({match: '**/*.css'}));
+		.pipe(gulp.dest(SRC.css.dir))
+    .pipe($.if(SRC.css.ext, browserSync.stream()));
 
 	return stream;
 });<% } else { %>
@@ -42,35 +52,35 @@ gulp.task('concatCss', function() {
   var stream = gulp.src([
       'src/css/normalize.css',
       'src/css/normalize-extra.css',
-      'src/css/**/*.css',
-      '!src/css/main.css'
+      'src/css/sprite.css',
+      'src/css/main.css'
     ])
-    .pipe($.concat('main.css'))
-    .pipe(gulp.dest('src/css'))
-    .pipe(browserSync.stream({match: '**/*.css'}));
+    .pipe($.concat('concat.css'))
+    .pipe(gulp.dest(SRC.css.dir))
+    .pipe(browserSync.stream());
 
   return stream;
 })<% } %>
 
 gulp.task('optimize', function() {
 	var assets = $.useref.assets();
-	<% if (useRev) { %>var manifest = gulp.src('dist/manifest.json');<% } %>
+	<% if (useRev) { %>var manifest = gulp.src(path.json(DEST_PATH, MANIFEST));<% } %>
 
-	var stream = gulp.src('src/*.html')
+	var stream = gulp.src(SRC.html.globpath)
 		.pipe(assets)
-		.pipe($.if('*.js', $.uglify()))
-    .pipe($.if('*.css', $.minifyCss(<% if (legacy) { %>{compatibility: 'ie7'}<% } %>)))<% if (useRev) { %>
+		.pipe($.if(SRC.js.ext, $.uglify()))
+    .pipe($.if(SRC.css.ext, $.minifyCss(<% if (legacy) { %>{compatibility: 'ie7'}<% } %>)))<% if (useRev) { %>
     .pipe($.rev())<% } %>
     .pipe(assets.restore())
-    .pipe($.if('*.html', $.inlineSource()))
-		.pipe($.if('*.html', $.replace('../img', 'img')))
+    .pipe($.if(SRC.html.ext, $.inlineSource()))
+		.pipe($.if(SRC.html.ext, $.replace('../img', 'img')))
     .pipe($.base64({
       extensions: [/\.(jpg|png|svg|gif)\?__inline$/i],
       maxImageSize: 8*1024
     }))
     .pipe($.useref())<% if (useRev) { %>
     .pipe($.revReplace({manifest: manifest}))<% } %>
-    .pipe($.if('*.html', $.htmlmin({
+    .pipe($.if(SRC.html.ext, $.htmlmin({
       collapseWhitespace: true,
       collapseBooleanAttributes: true,
       removeEmptyAttributes: true,
@@ -78,42 +88,40 @@ gulp.task('optimize', function() {
       minifyJS: true,
       minifyCSS: true
     })))
-		.pipe(gulp.dest('dist/'));
+		.pipe(gulp.dest(DEST_PATH));
 
 	return stream;
 });
 
 <% if (useImagemin) { %>
 gulp.task('imagemin', function(){
-	var stream = gulp.src('src/img/*.{jpg,png,gif,svg}')
-			.pipe($.imagemin({
-				progressive: true
-			}))<% if (useRev) { %>
+	var stream = gulp.src(SRC.img.globpath, {base: SOURCE_PATH})
+			.pipe($.imagemin({progressive: true}))<% if (useRev) { %>
       .pipe($.rev())<% } %>
-			.pipe(gulp.dest('dist/img'))<% if (useRev) { %>
-			.pipe($.rev.manifest('manifest.json'))
-			.pipe(gulp.dest('dist/'));<% } %>
+			.pipe(gulp.dest(DEST_PATH))<% if (useRev) { %>
+			.pipe($.rev.manifest(MANIFEST))
+			.pipe(gulp.dest(DEST_PATH));<% } %>
 
 	return stream;
 });<% } %>
 
 <% if (useSpritesmith) { %>
 gulp.task('sprite', function () {
-  var spriteData = gulp.src('src/img/sprites/*.png').pipe($.spritesmith({
+  var spriteData = gulp.src(path.json(SRC.img.dir, 'sprites/*.png')).pipe($.spritesmith({
     padding: 1,
     imgName: 'sprite.png',
-    imgPath: '../',
+    imgPath: '../sprite.png',
     cssName: '<% if (useSass) { %>_sprite.scss<% } else { %>sprite.css<% } %>'
   }));
 
   return spriteData
-    .pipe($.if('*.png', gulp.dest('src/img')))
-    <% if (useSass) { %>.pipe($.if('*.scss', gulp.dest('src/scss/helpers')))<% } else { %>.pipe($.if('*.css', gulp.dest('src/css')))<% } %>;
+    .pipe($.if('*.png', gulp.dest(SRC.img.dir)))
+    <% if (useSass) { %>.pipe($.if(SRC.scss.ext, gulp.dest(path.join(SRC.scss.dir, 'helpers'))))<% } else { %>.pipe($.if(SRC.css.ext, gulp.dest(SRC.css.dir)))<% } %>;
 });<% } %>
 
 <% if (useProxy) { %>
 var proxy = httpProxy.createProxyServer({
-   target: 'http://127.0.0.1:3000'
+   target: pkg.proxyAddr
  });
 
 var proxyMiddleware = function(req, res, next) {
@@ -129,13 +137,13 @@ gulp.task('browserSync', [<% if (useSass) { %>'sass'<% } else { %>'concatCss'<% 
 		startPath: 'index.html',
 		server: { <% if (useProxy) { %>
     	middleware: proxyMiddleware,<% } %>
-      baseDir: 'src'
+      baseDir: SOURCE_PATH
 		}
 	});
 
-  <% if (useSass) { %>gulp.watch('src/scss/**/*.scss', ['sass']);<% } else { %>
-  gulp.watch(['src/css/**/*.css', '!src/css/main.css'], ['concatCss']);<% } %>
-	gulp.watch(['src/**/*.{js,html,jpg,png,svg,gif}']).on('change', browserSync.reload);
+  <% if (useSass) { %>gulp.watch(SRC.scss.globpath, ['sass']);<% } else { %>
+  gulp.watch([SRC.css.globpath, '!src/css/concat.css'], ['concatCss']);<% } %>
+	gulp.watch(SRC.html.globpath).on('change', browserSync.reload);
   cb();
 });
 
@@ -144,14 +152,12 @@ gulp.task('serve', function(cb) {
   runSequence('bower',<% if (useSpritesmith) { %> 'sprite',<% } %> 'browserSync', cb);
 });
 
-
 gulp.task('default', ['serve']);
-
 
 gulp.task('build', function(cb) {
 	runSequence('clean',<% if (useSpritesmith) { %> 'sprite',<% } %><% if (useSass) { %> 'sass',<% } else { %> 'concatCss',<% } %><% if (useImagemin) { %> 'imagemin',<% } %> 'optimize', cb);
 });
 
 gulp.task('clean', function(cb) {
-  del('dist', cb);
+  del(DEST_PATH, cb);
 });

@@ -13,7 +13,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 	<meta name="renderer" content="webkit">
 	<title><%= projectname %></title>
-	<link rel="stylesheet" href="css/main.css" inline><% if (includeModernizr) { %>
+	<link rel="stylesheet" href="css/<% if (useSass) { %>main<% } else { %>concat<% } %>.css" inline><% if (includeModernizr) { %>
 	<!-- build:js js/modernizr.js -->
 	<script src="js/lib/modernizr.js"></script>
 	<!-- endbuild --><% } %>

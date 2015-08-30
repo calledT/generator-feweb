@@ -1,9 +1,13 @@
 
 html {
-  font-family: PingFang SC, Lantinghei SC, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans;
+  <% if (useSass) { %>font-family: $font-family;
+  font-size: $font-size;
+  color: $color;
+  background: $background;
+  <% } else { %>font-family: PingFang SC, Lantinghei SC, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans;
   font-size: 12px;
   color: #000;
-  background: #fff;
+  background: #fff;<% } %>
   -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
@@ -26,7 +30,8 @@ a {
 }
 
 a:hover {
-  color: #d91a29;
+  <% if (useSass) { %>color: $brand;
+  <% } else { %>color: #d91a29;<% } %>
   text-decoration: underline;
 }
 
@@ -85,16 +90,21 @@ textarea {
 
 [hidden],
 .hidden {
-  display: none !important;
-  visibility: hidden;
+  <% if (useSass) { %>@include hidden;
+  <% } else { %>display: none !important;
+  visibility: hidden;<% } %>
 }
 
 
+<% if (useSass) { %>
+.visuallyhidden {
+  @include visuallyhidden;
+}
+<% } else { %>
 /*
  * Hide only visually, but have it available for screen readers:
  * http://snook.ca/archives/html_and_css/hiding-content-for-accessibility
  */
-
 .visuallyhidden {
   border: 0;
   clip: rect(0 0 0 0);
@@ -119,7 +129,7 @@ textarea {
   overflow: visible;
   position: static;
   width: auto;
-}
+}<% } %>
 
 /*
  * Hide visually and from screen readers, but maintain layout
@@ -144,13 +154,17 @@ textarea {
   font-family: Palatino, Optima, Georgia, serif;
 }
 
+<% if (!legacy) { %>
 .browserupgrade {
   margin: 0.2em 0;
   background: #ccc;
   color: #000;
   padding: 0.2em 0;
-}
+}<% } %>
 
+<% if (useSass) { %>
+@include media-print;
+<% } else { %>
 @media print {
   *,
   *:before,
@@ -203,4 +217,4 @@ textarea {
   h3 {
     page-break-after: avoid;
   }
-}
+}<% } %>
