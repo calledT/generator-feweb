@@ -17,11 +17,10 @@
 	<title><%= projectname %></title>
 	<link rel="stylesheet" href="css/<% if (useSass) { %>main<% } else { %>concat<% } %>.css" inline><% if (includeModernizr) { %>
 	<!-- build:js js/modernizr.js -->
-	<script src="js/lib/modernizr.js"></script>
-	<!-- endbuild --><% } else if (legacy) { %>
+	<script src="js/lib/modernizr.js"></script><% } else if (legacy) { %>
   <!-- build:js js/html5shiv.js -->
-  <script src="js/lib/html5shiv.js"></script>
-  <!-- build:js js/modernizr.js --><% } %>
+  <script src="js/lib/html5shiv.js"></script><% } %>
+  <!-- endbuild -->
 </head>
 <body><% if (!legacy) { %>
 	<!--[if lt IE 8]>
