@@ -37,8 +37,7 @@ gulp.task('bower', function() {
 
 <% if (useSass) { %>
 gulp.task('sass', function() {
-  var cssgrace   = require('cssgrace');
-  var processors = [autoprefixer({browsers: pkg.browsers}), cssgrace];
+  var processors = [autoprefixer({browsers: pkg.browsers})];
 
 	var stream = gulp.src(SRC.scss.globpath)
     .pipe($.sourcemaps.init())
