@@ -9,12 +9,10 @@ var path           = require('path');
 var merge          = require('merge-stream');
 var runSequence    = require('run-sequence');
 var browserSync    = require('browser-sync');
-var autoprefixer   = require('autoprefixer-core');
+var autoprefixer   = require('autoprefixer');
 var mainBowerFiles = require('main-bower-files');<% if (useProxy) { %>
 var httpProxy      = require('http-proxy');<% } %>
-var cssgrace       = require('cssgrace');
 var pkg            = require('./package.json');
-var processors     = [autoprefixer({browsers: pkg.browsers}), cssgrace];
 
 var SRC = _.mapKeys(pkg.src, function(value, key) {
   value.globpath = path.join(value.dir, '**', '*' + value.ext);
@@ -39,6 +37,9 @@ gulp.task('bower', function() {
 
 <% if (useSass) { %>
 gulp.task('sass', function() {
+  var cssgrace   = require('cssgrace');
+  var processors = [autoprefixer({browsers: pkg.browsers}), cssgrace];
+
 	var stream = gulp.src(SRC.scss.globpath)
     .pipe($.sourcemaps.init())
 		.pipe($.sass({precision: 8}).on('error', $.sass.logError))
