@@ -1,29 +1,23 @@
-<% if (legacy) { %><!--[if IE]><![endif]-->
 <!DOCTYPE html>
-<!--[if lt IE 7]><html class="<% if (includeModernizr) { %>no-js <% } %>lt-ie9 lt-ie8 lt-ie7"><![endif]-->
-<!--[if IE 7]><html class="<% if (includeModernizr) { %>no-js <% } %>lt-ie9 lt-ie8"><![endif]-->
-<!--[if IE 8]><html class="<% if (includeModernizr) { %>no-js <% } %>lt-ie9"><![endif]-->
-<!--[if gt IE 8]><!--><html<% if (includeModernizr) { %> class="no-js"<% } %>><!--<![endif]--><% } else { %>
 <!DOCTYPE html>
-<html<% if (includeModernizr) { %> class="no-js"<% } %>><% } %>
+<html<% if (legacy) { %> class="no-js"<% } %>>
 <head lang="zh-cmn">
 	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<meta http-equiv="Cache-Control" content="no-siteapp">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
-	<meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="renderer" content="webkit">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+	<title><%= projectname %></title>
   <meta name="description" content="">
   <meta name="keywords" content="">
-	<title><%= projectname %></title>
-	<link rel="stylesheet" href="css/<% if (useSass) { %>main<% } else { %>concat<% } %>.css" inline><% if (includeModernizr) { %>
-	<!-- build:js js/modernizr.js -->
-	<script src="js/lib/modernizr.js"></script><% } else if (legacy) { %>
-  <!-- build:js js/html5shiv.js -->
-  <script src="js/lib/html5shiv.js"></script><% } %>
-  <!-- endbuild -->
+	<link rel="stylesheet" href="css/main.css" inline><% if (legacy) { %>
+	<!-- build:js js/shim.js -->
+	<script src="js/lib/modernizr.js"></script>
+  <script src="js/lib/es5-shim.js"></script>
+  <!-- endbuild --><% } %>
 </head>
 <body><% if (!legacy) { %>
-	<!--[if lt IE 8]>
+	<!--[if lt IE 9]>
 	<p class="browserupgrade">为您更好的浏览此网页，请<a href="http://browsehappy.com/" target="_blank">升级浏览器</a></p>
 	<![endif]--><% } %>
 	<p>hello world</p>

@@ -6,8 +6,6 @@ var chalk      = require('chalk');
 var mkdirp     = require('mkdirp');
 var path       = require('path');
 var _s         = require('underscore.string');
-var exec       = require('child_process').exec;
-
 
 module.exports = generators.Base.extend({
   constructor: function() {
@@ -44,10 +42,6 @@ module.exports = generators.Base.extend({
       name: 'features',
       message: 'What more would you like?',
       choices: [{
-        name: 'Modernizr',
-        value: 'includeModernizr',
-        checked: true
-      }, {
         name: 'JQuery',
         value: 'includeJQuery',
         checked: true
@@ -57,19 +51,15 @@ module.exports = generators.Base.extend({
       name: 'tasks',
       message: 'What more gulp tasks would you like?',
       choices: [{
-        name: 'Sass',
-        value: 'useSass',
-        checked: true
-      }, {
-        name: 'Reversioning',
+        name: 'Static asset revisioning',
         value: 'useRev',
         checked: true
       }, {
-        name: 'Proxyserver',
+        name: 'Proxy server for browserSync',
         value: 'useProxy',
         checked: true
       }, {
-        name: 'Spritesmith',
+        name: 'Convert a set of images into a spritesheet',
         value: 'useSpritesmith',
         checked: true
       }]
@@ -88,11 +78,9 @@ module.exports = generators.Base.extend({
         return arr && arr.indexOf(feat) !== -1;
       }
 
-      this.useSass = has('useSass', tasks);
       this.useRev = has('useRev', tasks);
       this.useProxy = has('useProxy', tasks);
       this.useSpritesmith = has('useSpritesmith', tasks);
-      this.includeModernizr = has('includeModernizr', features);
       this.includeJQuery = has('includeJQuery', features);
       this.projectname = _s.slugify(answers.projectname);
       this.legacy = (/y/i).test(answers.legacy);
@@ -106,7 +94,6 @@ module.exports = generators.Base.extend({
         this.templatePath('gulpfile.js'),
         this.destinationPath('gulpfile.js'),
         {
-          useSass: this.useSass,
           useProxy: this.useProxy,
           useRev: this.useRev,
           useSpritesmith: this.useSpritesmith,
@@ -120,28 +107,13 @@ module.exports = generators.Base.extend({
         this.destinationPath('package.json'),
         {
           projectname: this.projectname,
-          useSass: this.useSass,
-          useProxy: this.useProxy,
+          includeJQuery: this.includeJQuery,
+          legacy: this.legacy,
           useRev: this.useRev,
+          useProxy: this.useProxy,
           useSpritesmith: this.useSpritesmith
         }
       )
-    },
-    bower: function () {
-      this.fs.copyTpl(
-        this.templatePath('_bower.json'),
-        this.destinationPath('bower.json'),
-        {
-          projectname: this.projectname,
-          legacy: this.legacy,
-          includeModernizr: this.includeModernizr,
-          includeJQuery: this.includeJQuery
-        }
-      );
-      this.fs.copy(
-        this.templatePath('bowerrc'),
-        this.destinationPath('.bowerrc')
-      );
     },
     git: function () {
       this.fs.copy(
@@ -160,9 +132,7 @@ module.exports = generators.Base.extend({
         this.templatePath('index.html'),
         this.destinationPath('src/index.html'),
         {
-          useSass: this.useSass,
           useRev: this.useRev,
-          includeModernizr: this.includeModernizr,
           includeJQuery: this.includeJQuery,
           projectname: this.projectname,
           legacy: this.legacy
@@ -175,40 +145,38 @@ module.exports = generators.Base.extend({
         this.destinationPath('src/js/main.js')
       );
     },
-    stylesheet: function() {
+    scss: function() {
       this.fs.copyTpl(
-        this.templatePath('normalize-extra.css'),
-        this.destinationPath(this.useSass ? 'src/scss/base/_normalize-extra.scss' : 'src/css/normalize-extra.css'),
-        {useSass: this.useSass, legacy: this.legacy}
+        this.templatePath('scss/main.scss'),
+        this.destinationPath('src/scss/main.scss'),
+        {useSpritesmith: this.useSpritesmith}
+      );
+      this.fs.copyTpl(
+        this.templatePath('scss/_variables.scss'),
+        this.destinationPath('src/scss/base/_variables.scss'),
+        {legacy: this.legacy}
+      );
+      this.fs.copyTpl(
+        this.templatePath('scss/_normalize-extra.scss'),
+        this.destinationPath('src/scss/base/_normalize-extra.scss'),
+        {legacy: this.legacy}
+      );
+      this.fs.copy(
+        this.templatePath('scss/_mixins.scss'),
+        this.destinationPath('src/scss/helpers/_mixins.scss')
+      );
+      this.fs.copy(
+        this.templatePath('scss/_functions.scss'),
+        this.destinationPath('src/scss/helpers/_functions.scss')
+      );
+      this.fs.copy(
+        this.templatePath('scss/mixins/*.scss'),
+        this.destinationPath('src/scss/helpers/mixins')
+      );
+      this.fs.copy(
+        this.templatePath('scss/functions/*.scss'),
+        this.destinationPath('src/scss/helpers/functions')
       )
-      if (this.useSass) {
-        this.fs.copyTpl(
-          this.templatePath('scss/main.scss'),
-          this.destinationPath('src/scss/main.scss'),
-          {useSpritesmith: this.useSpritesmith}
-        );
-        this.fs.copyTpl(
-          this.templatePath('scss/_variables.scss'),
-          this.destinationPath('src/scss/helpers/_variables.scss'),
-          {legacy: this.legacy}
-        );
-        this.fs.copy(
-          this.templatePath('scss/_mixins.scss'),
-          this.destinationPath('src/scss/helpers/_mixins.scss')
-        );
-        this.fs.copy(
-          this.templatePath('scss/_functions.scss'),
-          this.destinationPath('src/scss/helpers/_functions.scss')
-        );
-        this.fs.copy(
-          this.templatePath('scss/mixins/*.scss'),
-          this.destinationPath('src/scss/helpers/mixins')
-        );
-        this.fs.copy(
-          this.templatePath('scss/functions/*.scss'),
-          this.destinationPath('src/scss/helpers/functions')
-        )
-      }
     },
     image: function() {
       if (this.useSpritesmith) {
@@ -231,21 +199,11 @@ module.exports = generators.Base.extend({
     var self = this;
     var howToInstall =
       '\nAfter running ' +
-      chalk.yellow.bold('npm install & bower install') +
-      ', inject your' +
-      '\nfront end dependencies by running ' +
-      chalk.yellow.bold('gulp bower') +
-      '.';
+      chalk.yellow.bold('npm install') +'.';
 
     if (this.options['skip-install']) {
       this.log(howToInstall);
       return;
     }
-
-    exec('gulp bower', function(err, stdout, stderr){
-      if (err) {
-        self.log('you should run ' + chalk.yellow.bold('gulp bower') + ' command manually');
-      }
-    });
   }
 });
