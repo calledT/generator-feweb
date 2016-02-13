@@ -1,6 +1,6 @@
 {
   "name": "generator-feweb",
-  "version": "0.3.3",
+  "version": "1.0.0",
   "description": "yeoman generator for front-end web developer",
   "keywords": [
     "yeoman-generator",
