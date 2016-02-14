@@ -83,9 +83,8 @@ gulp.task('sprite', function () {
       .pipe($.imagemin())
       .pipe(gulp.dest(SRC.img.dir));
 
-  var cssStream = spriteData.css<% if (useSass) { %>
-      .pipe(gulp.dest(path.join(SRC.scss.dir, 'helpers')));<% } else { %>
-      .pipe(gulp.dest(SRC.css.dir));<% } %>
+  var cssStream = spriteData.css
+      .pipe(gulp.dest(path.join(SRC.scss.dir, 'helpers')));
 
   return merge(imgStream, cssStream);
 });<% } %>

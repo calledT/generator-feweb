@@ -55,7 +55,7 @@ module.exports = generators.Base.extend({
         value: 'useRev',
         checked: true
       }, {
-        name: 'Proxy server for browserSync',
+        name: 'Proxy server for browser-sync',
         value: 'useProxy',
         checked: true
       }, {
