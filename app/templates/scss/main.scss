@@ -4,5 +4,5 @@
 @import 'helpers/sprite';<% } %>
 
 @import 'base/variables';
-@import 'base/normalize';
+@import 'node_modules/normalize.css/normalize.css';
 @import 'base/normalize-extra';

@@ -1,6 +1,6 @@
 'use strict'
 
-var $               = require('gulp-load-plugins');
+var $               = require('gulp-load-plugins')({pattern: ['gulp-*', 'gulp.*']});
 var _               = require('lodash');
 var del             = require('del');
 var gulp            = require('gulp');
@@ -20,7 +20,7 @@ var SRC = _.mapKeys(pkg.src, function(value, key) {
   value.globpath = path.join(value.dir, '**', '*' + value.ext);
   if (key === 'img') {
     value.sprite = {};
-    value.sprite.dir = path.join(value.dir, 'sprite');
+    value.sprite.dir = path.join(value.dir, 'sprites');
     value.sprite.globpath = path.join(value.sprite.dir, '**', '*' + value.ext);
   }
   return key;
@@ -48,7 +48,7 @@ gulp.task('optimize', function() {
 		.pipe($.useref())
     .pipe($.base64())
     .pipe($.if(SRC.js.ext, $.uglify()))
-    .pipe($.if(SRC.css.ext, $.csso())<% if (useRev) { %>
+    .pipe($.if(SRC.css.ext, $.csso()))<% if (useRev) { %>
     .pipe($.rev())<% } %>
     .pipe($.if(SRC.html.ext, $.inlineSource()))
     .pipe($.if(SRC.html.ext, $.replace('../img', 'img')))<% if (useRev) { %>
@@ -72,15 +72,15 @@ gulp.task('imagemin', function(){
 
 <% if (useSpritesmith) { %>
 gulp.task('sprite', function () {
-  var spriteData = gulp.src(SRC.img.sprite.globpath).pipe($.spritesmith({
-    padding: 1,
-    imgName: 'sprite.png',
-    imgPath: '../sprite.png',
-    cssName: '_sprite.scss'
-  }));
+  var spriteData = gulp.src(SRC.img.sprite.globpath)
+      .pipe($.spritesmith({
+        padding: 1,
+        imgName: 'sprite.png',
+        imgPath: '../sprite.png',
+        cssName: '_sprite.scss'
+      }));
 
   var imgStream = spriteData.img
-      .pipe($.imagemin())
       .pipe(gulp.dest(SRC.img.dir));
 
   var cssStream = spriteData.css
