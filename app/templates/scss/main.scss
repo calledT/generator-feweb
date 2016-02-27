@@ -1,8 +1,7 @@
+@import 'found';<% if (useSpritesmith) { %>
+@import 'spritesmith';
 
-@import 'helpers/functions';
-@import 'helpers/mixins';<% if (useSpritesmith) { %>
-@import 'helpers/sprite';<% } %>
-
-@import 'base/variables';
-@import 'node_modules/normalize.css/normalize.css';
-@import 'base/normalize-extra';
+.smile {
+  display: block;
+  @include sprite($smilefill);
+}<% } %>

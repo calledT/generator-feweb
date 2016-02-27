@@ -23,21 +23,7 @@ describe('files', function() {
       '.editorconfig',
       'src/index.html',
       'src/js/main.js',
-      'src/scss/main.scss',
-      'src/scss/base/_normalize-extra.scss',
-      'src/scss/base/_variables.scss',
-      'src/scss/helpers/_mixins.scss',
-      'src/scss/helpers/mixins/_border-radius.scss',
-      'src/scss/helpers/mixins/_clearfix.scss',
-      'src/scss/helpers/mixins/_hidden.scss',
-      'src/scss/helpers/mixins/_link-text-offscreen.scss',
-      'src/scss/helpers/mixins/_media-print.scss',
-      'src/scss/helpers/mixins/_onepixel.scss',
-      'src/scss/helpers/mixins/_visuallyhidden.scss',
-      'src/scss/helpers/_functions.scss',
-      'src/scss/helpers/functions/_calc-percent.scss',
-      'src/scss/helpers/functions/_px2em.scss',
-      'src/scss/helpers/functions/_strip-unit.scss'
+      'src/scss/main.scss'
     ];
 
     assert.file(expected);

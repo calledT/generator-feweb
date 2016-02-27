@@ -10,19 +10,15 @@
 	<title><%= projectname %></title>
   <meta name="description" content="">
   <meta name="keywords" content="">
-	<link rel="stylesheet" href="css/main.css" inline><% if (legacy) { %>
-	<!-- build:js js/shim.js -->
-	<script src="js/lib/modernizr.js"></script>
-  <script src="js/lib/es5-shim.js"></script>
-  <!-- endbuild --><% } %>
+	<link rel="stylesheet" href="css/main.css" inline>
 </head>
 <body><% if (!legacy) { %>
 	<!--[if lt IE 9]>
 	<p class="browserupgrade">为您更好的浏览此网页，请<a href="http://browsehappy.com/" target="_blank">升级浏览器</a></p>
 	<![endif]--><% } %>
-	<p>hello world</p>
+	<p>hello world</p><em class="smile"></em>
 	<!-- build:js js/bundle.js -->
-  <% if (includeJQuery) { %><script src="js/lib/jquery.js"></script><% } %>
+  <% if (includeJQuery) { %><script src="../node_modules/jquery/dist/jquery.js"></script><% } %>
 	<script src="js/main.js"></script>
 	<!-- endbuild -->
 </body>

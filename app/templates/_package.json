@@ -2,11 +2,9 @@
   "name": "<%= projectname %>",
   "private": true,
   "version": "0.0.1",
-  "dependencies": {<% if (legacy) { %>
-    "modernizr": "^3.3.1",
-    "es5-shim": "^4.5.3",<% } %><% if (includeJQuery) { %>
+  "dependencies": {<% if (includeJQuery) { %>
     "jquery": "<% if (legacy) { %>1.12.0<% } else { %>2.2.0<% } %>",<% } %>
-    "normalize.css": "^3.0.3"
+    "found.scss": "^0.0.3"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.1",
@@ -17,14 +15,16 @@
     "gulp-concat": "^2.6.0",
     "gulp-htmlmin": "^1.3.0",
     "gulp-if": "^2.0.0",
+    "gulp-ignore": "^2.0.1",
     "gulp-inline-source": "^2.1.0",
     "gulp-load-plugins": "^1.2.0",
-    "gulp-csso": "^1.0.1",
+    "gulp-cssnano": "^2.1.1",
     "gulp-postcss": "^6.0.1",
     "gulp-rename": "^1.2.2",
-    "gulp-useref": "^3.0.5",
+    "gulp-useref": "^3.0.7",
+    "gulp-util": "^3.0.7",
     "gulp-replace": "^0.5.4",<% if (useRev) { %>
-    "gulp-rev": "^6.0.1",
+    "gulp-rev": "^7.0.0",
     "gulp-rev-replace": "^0.4.3",<% } %>
     "gulp-sass": "^2.2.0",
     "gulp-sourcemaps": "^1.6.0",
@@ -34,7 +34,8 @@
     "http-proxy-middleware": "^0.10.0",<% } %>
     "lodash": "^4.2.1",
     "merge-stream": "^1.0.0",
-    "run-sequence": "^1.1.5"
+    "run-sequence": "^1.1.5",
+    "yargs": "^4.2.0"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -75,6 +76,14 @@
     "img": {
       "dir": "src/img",
       "ext": ".{png,jpg,gif}"
+    },
+    "iconfont": {
+      "dir": "src/iconfont",
+      "ext": ".{svg,ttf,eot,woff,woff2}"
+    },
+    "media": {
+      "dir": "src/media",
+      "ext": ".{mp3,ogg,mp4}"
     }
   },
   "htmlmin": {

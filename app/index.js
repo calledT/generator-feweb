@@ -149,34 +149,10 @@ module.exports = generators.Base.extend({
       this.fs.copyTpl(
         this.templatePath('scss/main.scss'),
         this.destinationPath('src/scss/main.scss'),
-        {useSpritesmith: this.useSpritesmith}
+        {
+          useSpritesmith: this.useSpritesmith
+        }
       );
-      this.fs.copyTpl(
-        this.templatePath('scss/_variables.scss'),
-        this.destinationPath('src/scss/base/_variables.scss'),
-        {legacy: this.legacy}
-      );
-      this.fs.copyTpl(
-        this.templatePath('scss/_normalize-extra.scss'),
-        this.destinationPath('src/scss/base/_normalize-extra.scss'),
-        {legacy: this.legacy}
-      );
-      this.fs.copy(
-        this.templatePath('scss/_mixins.scss'),
-        this.destinationPath('src/scss/helpers/_mixins.scss')
-      );
-      this.fs.copy(
-        this.templatePath('scss/_functions.scss'),
-        this.destinationPath('src/scss/helpers/_functions.scss')
-      );
-      this.fs.copy(
-        this.templatePath('scss/mixins/*.scss'),
-        this.destinationPath('src/scss/helpers/mixins')
-      );
-      this.fs.copy(
-        this.templatePath('scss/functions/*.scss'),
-        this.destinationPath('src/scss/helpers/functions')
-      )
     },
     image: function() {
       if (this.useSpritesmith) {
