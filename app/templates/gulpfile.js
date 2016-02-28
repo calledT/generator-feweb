@@ -10,13 +10,13 @@ var argv            = require('yargs').argv;
 var merge           = require('merge-stream');
 var runSequence     = require('run-sequence');
 var browserSync     = require('browser-sync');
-var autoprefixer    = require('autoprefixer');<% if (useProxy) { %>
-var proxyMiddleware = require('http-proxy-middleware');<% } %>
+var autoprefixer    = require('autoprefixer');
+var proxyMiddleware = require('http-proxy-middleware');
 var pkg             = require('./package.json');
 
 // TASK ARGV
-<% if (useProxy) { %>
-var proxyAddr = argv.proxyAddr !== undefined ? argv.proxyAddr : pkg.proxyAddr;<% } %>
+var proxyAddr = argv.proxyAddr !== undefined ? argv.proxyAddr : pkg.proxyAddr;
+var useRev = argv.rev === 'false' ? false : pkg.useRev;
 
 // CONST
 var SOURCE_PATH      = 'src';
@@ -49,17 +49,27 @@ gulp.task('sass', function() {
 });
 
 gulp.task('useref', function() {
-	<% if (useRev) { %>var manifest = gulp.src(path.join(DEST_PATH, MANIFEST));<% } %>
+	var manifest = gulp.src(path.join(DEST_PATH, MANIFEST));
+
+  var condition = function (file) {
+    if (!useRev)
+      return false;
+
+    if ($.match(file, SRC.html.globext))
+      return false;
+
+    return true;
+  };
 
 	var stream = gulp.src(SRC.html.globpath)
 		.pipe($.useref())
     .pipe($.base64())
     .pipe($.if(SRC.js.globext, $.uglify()))
-    .pipe($.if(SRC.css.globext, $.cssnano({zindex: false})))<% if (useRev) { %>
-    .pipe($.if(SRC.html.globext, $.util.noop(), $.rev()))<% } %>
+    .pipe($.if(SRC.css.globext, $.cssnano({zindex: false})))
+    .pipe($.if(condition, $.rev(), $.util.noop()))
     .pipe($.if(SRC.html.globext, $.inlineSource({rootpath: SOURCE_PATH})))
-    .pipe($.if(SRC.html.globext, $.replace('../img', 'img')))<% if (useRev) { %>
-    .pipe($.revReplace({manifest: manifest}))<% } %>
+    .pipe($.if(SRC.html.globext, $.replace('../img', 'img')))
+    .pipe($.if(useRev, $.revReplace({manifest: manifest})))
     .pipe($.if(SRC.html.globext, $.htmlmin(pkg.htmlmin)))
 		.pipe(gulp.dest(DEST_PATH));
 
@@ -74,17 +84,16 @@ gulp.task('resProcess', function() {
   var mediaStream = gulp.src(SRC.media.globpath, {base: SOURCE_PATH});
   var iconfontStream = gulp.src(SRC.iconfont.globpath, {base: SOURCE_PATH});
 
-  var stream = merge(imgStream, mediaStream, iconfontStream)<% if (useRev) { %>
-      .pipe($.rev())<% } %>
-      .pipe(gulp.dest(DEST_PATH))<% if (useRev) { %>
-      .pipe($.rev.manifest(path.join(DEST_PATH, MANIFEST), {base: DEST_PATH, merge: true}))
-      .pipe(gulp.dest(DEST_PATH));<% } %>
+  var stream = merge(imgStream, mediaStream, iconfontStream)
+      .pipe($.if(useRev, $.rev(), $.util.noop()))
+      .pipe(gulp.dest(DEST_PATH))
+      .pipe($.if(useRev, $.rev.manifest(path.join(DEST_PATH, MANIFEST), {base: DEST_PATH, merge: true}), $.util.noop()))
+      .pipe($.if(useRev, gulp.dest(DEST_PATH), $.util.noop()));
 
   return stream;
 });
 
-
-<% if (useSpritesmith) { %>
+<% if (includeSpritesmith) { %>
 gulp.task('sprite', function () {
   var spriteData = gulp.src(SRC.img.sprite.globpath)
       .pipe($.spritesmith({
@@ -109,8 +118,8 @@ gulp.task('browserSync', ['sass'], function(cb) {
     open: 'external',
 		server: {
       index: 'index.html',
-      baseDir: SOURCE_PATH<% if (useProxy) { %>,
-      middleware: [proxyMiddleware(['/api'], {target: proxyAddr})]<% } %>
+      baseDir: SOURCE_PATH,
+      middleware: [proxyMiddleware(['/api'], {target: proxyAddr})]
 		}
 	});
 
@@ -124,11 +133,11 @@ gulp.task('clean:dest', function() {
 });
 
 gulp.task('serve', function(cb) {
-  runSequence(<% if (useSpritesmith) { %> 'sprite',<% } %> 'browserSync', cb());
+  runSequence(<% if (includeSpritesmith) { %>'sprite', <% } %>'browserSync', cb);
 });
 
 gulp.task('build', function(cb) {
-  runSequence('clean:dest',<% if (useSpritesmith) { %>'sprite',<% } %>'sass','resProcess','useref', cb());
+  runSequence('clean:dest',<% if (includeSpritesmith) { %> 'sprite',<% } %> 'sass','resProcess','useref', cb);
 });
 
 gulp.task('default', ['serve']);

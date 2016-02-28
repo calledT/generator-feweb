@@ -6,12 +6,9 @@
 
 * Gulp for tasks runner.
 * Preview by [Browsersync](http://www.browsersync.io/).
-* [Normalize.css](https://github.com/necolas/normalize.css).
-* Base structure of Scss and automagically compile Scss(Optional).
 * Postcss with processer [autoprefixer](https://github.com/postcss/autoprefixer).
 * Http-proxy to avoid CORS when develop(Optional).
 * Awesome Image Optimization (via OptiPNG, pngquant, jpegtran and gifsicle)(Optional).
-* Legacy IE support(Optional).
 * Reversioning static files for cache busting(Optional).
 * Automagically generate sprite image(Optional).
 

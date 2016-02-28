@@ -45,22 +45,13 @@ module.exports = generators.Base.extend({
         name: 'JQuery',
         value: 'includeJQuery',
         checked: true
-      }]
-    }, {
-      type: 'checkbox',
-      name: 'tasks',
-      message: 'What more gulp tasks would you like?',
-      choices: [{
-        name: 'Static asset revisioning',
-        value: 'useRev',
-        checked: true
-      }, {
-        name: 'Proxy server for browser-sync',
-        value: 'useProxy',
-        checked: true
       }, {
         name: 'Convert a set of images into a spritesheet',
-        value: 'useSpritesmith',
+        value: 'includeSpritesmith',
+        checked: true
+      }, {
+        name: 'Static asset revisioning',
+        value: 'useRev',
         checked: true
       }]
     }, {
@@ -71,17 +62,15 @@ module.exports = generators.Base.extend({
     }];
 
     this.prompt(prompts, function (answers) {
-      var tasks = answers.tasks;
       var features = answers.features;
 
-      function has(feat, arr) {
-        return arr && arr.indexOf(feat) !== -1;
+      function hasFeature(feat) {
+        return features && features.indexOf(feat) !== -1;
       }
 
-      this.useRev = has('useRev', tasks);
-      this.useProxy = has('useProxy', tasks);
-      this.useSpritesmith = has('useSpritesmith', tasks);
-      this.includeJQuery = has('includeJQuery', features);
+      this.useRev = hasFeature('useRev');
+      this.includeSpritesmith = hasFeature('includeSpritesmith');
+      this.includeJQuery = hasFeature('includeJQuery');
       this.projectname = _s.slugify(answers.projectname);
       this.legacy = (/y/i).test(answers.legacy);
 
@@ -94,9 +83,8 @@ module.exports = generators.Base.extend({
         this.templatePath('gulpfile.js'),
         this.destinationPath('gulpfile.js'),
         {
-          useProxy: this.useProxy,
           useRev: this.useRev,
-          useSpritesmith: this.useSpritesmith,
+          includeSpritesmith: this.includeSpritesmith,
           legacy: this.legacy
         }
       );
@@ -110,8 +98,7 @@ module.exports = generators.Base.extend({
           includeJQuery: this.includeJQuery,
           legacy: this.legacy,
           useRev: this.useRev,
-          useProxy: this.useProxy,
-          useSpritesmith: this.useSpritesmith
+          includeSpritesmith: this.includeSpritesmith
         }
       )
     },
@@ -150,12 +137,12 @@ module.exports = generators.Base.extend({
         this.templatePath('scss/main.scss'),
         this.destinationPath('src/scss/main.scss'),
         {
-          useSpritesmith: this.useSpritesmith
+          includeSpritesmith: this.includeSpritesmith
         }
       );
     },
     image: function() {
-      if (this.useSpritesmith) {
+      if (this.includeSpritesmith) {
         this.fs.copy(
           this.templatePath('sprites/*.png'),
           this.destinationPath('src/img/sprites')
