@@ -119,16 +119,16 @@ gulp.task('browserSync', ['sass'], function(cb) {
   cb();
 });
 
-gulp.task('clean', function(cb) {
-  del(DEST_PATH, cb());
+gulp.task('clean:dest', function() {
+  return del(DEST_PATH);
 });
 
 gulp.task('serve', function(cb) {
-  runSequence(<% if (useSpritesmith) { %> 'sprite',<% } %> 'browserSync', cb);
+  runSequence(<% if (useSpritesmith) { %> 'sprite',<% } %> 'browserSync', cb());
 });
 
 gulp.task('build', function(cb) {
-  runSequence('clean',<% if (useSpritesmith) { %>'sprite',<% } %>'sass','resProcess','useref', cb);
+  runSequence('clean:dest',<% if (useSpritesmith) { %>'sprite',<% } %>'sass','resProcess','useref', cb());
 });
 
 gulp.task('default', ['serve']);
